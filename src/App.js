@@ -28,12 +28,41 @@ class App {
     return total;
   }
 
-  parseInput(inputString) {
-    // parseInput placeholder
+  parseInput(input) {
+    const customSeparatorRegex = /^\/\/(.)\n/; // Custom separator regex
+    const defaultSeparators = [',', ':'];
+
+    if (customSeparatorRegex.test(input)) {
+      const match = input.match(customSeparatorRegex);
+      const inputNumbers = input.slice(match[0].length).trim();
+      const separators = [...defaultSeparators, match[1]]; // include custom separator
+      return { inputNumbers, separators };
+    }
+
+    return { inputNumbers: input.trim(), separators: defaultSeparators };
   }
 
-  parseNumber(inputNumbers, separators) {
-    // parseNumber placeholder
+  parseNumbers(inputNumbers, separators) {
+    const separatorsRegex = new RegExp(separators.join('|'), 'g');
+    const numberStrings = inputNumbers
+      .split(separatorsRegex)
+      .map(str => str.trim())
+      .filter(str => str.length > 0);
+
+    if (numberStrings.length === 0) {
+      throw new Error('[ERROR] 입력값에 유효한 숫자가 없습니다.');
+    }
+
+    return numberStrings.map(str => {
+      const num = Number(str);
+      if (!Number.isInteger(num)) {
+        throw new Error(`[ERROR] 입력값은 숫자여야 합니다: "${str}"`);
+      }
+      if (num < 0) {
+        throw new Error(`[ERROR] 입력값은 자연수만 허용됩니다: "${str}"`);
+      }
+      return num;
+    });
   }
 
   exceptionHandling(numbers) {
@@ -47,7 +76,7 @@ class App {
     }
     // Target non-natural numbers
     if (numbers.some(number => number < 0)) {
-      throw new Error("[ERROR] 입력값은 양수만 허용됩니다.");
+      throw new Error("[ERROR] 입력값은 자연수만 허용됩니다.");
     }
   }
 }
