@@ -18,7 +18,7 @@ const getLogSpy = () => {
 
 describe("문자열 계산기", () => {
   test("커스텀 구분자 사용", async () => {
-    const inputs = ["//;\\n1"];
+    const inputs = ["//;\n1"];
     mockQuestions(inputs);
 
     const logSpy = getLogSpy();
@@ -32,12 +32,60 @@ describe("문자열 계산기", () => {
     });
   });
 
-  test("예외 테스트", async () => {
+  // 예외 테스트들
+  test("음수 입력", async () => {
     const inputs = ["-1,2,3"];
     mockQuestions(inputs);
 
     const app = new App();
+    await expect(app.run()).rejects.toThrow('[ERROR] 입력값은 자연수만 허용됩니다: "-1"');
+  });
 
-    await expect(app.run()).rejects.toThrow("[ERROR]");
+  test("소수 입력", async () => {
+    const inputs = ["1,2.5,3"];
+    mockQuestions(inputs);
+
+    const app = new App();
+    await expect(app.run()).rejects.toThrow('[ERROR] 입력값은 숫자여야 합니다: "2.5"');
+  });
+
+  test("유효한 숫자가 없는 입력", async () => {
+    const inputs = ["a,b,c"];
+    mockQuestions(inputs);
+
+    const app = new App();
+    await expect(app.run()).rejects.toThrow("[ERROR] 입력값에 유효한 숫자가 없습니다.");
+  });
+
+  test("공백만 있는 입력", async () => {
+    const inputs = ["   "];
+    mockQuestions(inputs);
+
+    const app = new App();
+    await expect(app.run()).resolves.toBeUndefined(); // 0 반환, 에러 아님
+  });
+
+  test("공백으로만 이루어진 숫자", async () => {
+    const inputs = [" , , "];
+    mockQuestions(inputs);
+
+    const app = new App();
+    await expect(app.run()).rejects.toThrow("[ERROR] 입력값에 유효한 숫자가 없습니다.");
+  });
+
+  test("커스텀 구분자와 함께 음수 입력", async () => {
+    const inputs = ["//;\n1;2;-3"];
+    mockQuestions(inputs);
+
+    const app = new App();
+    await expect(app.run()).rejects.toThrow('[ERROR] 입력값은 자연수만 허용됩니다: "-3"');
+  });
+
+  test("커스텀 구분자와 함께 소수 입력", async () => {
+    const inputs = ["//;\n1;2;3.5"];
+    mockQuestions(inputs);
+
+    const app = new App();
+    await expect(app.run()).rejects.toThrow('[ERROR] 입력값은 숫자여야 합니다: "3.5"');
   });
 });

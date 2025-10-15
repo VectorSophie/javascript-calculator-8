@@ -6,6 +6,7 @@ class App {
 
     try {
       const calculateResult = this.calculateSum(inputString)
+      Console.print(`결과 : ${calculateResult}`);
     } catch (error) {
       Console.print(error.message);
       throw error;
@@ -19,8 +20,6 @@ class App {
 
     const { inputNumbers, separators } = this.parseInput(inputString);
     const numbers = this.parseNumbers(inputNumbers, separators);
-    this.exceptionHandling(numbers);
-
     let total = 0;
     numbers.forEach(number => {
       total += number;
@@ -53,32 +52,27 @@ class App {
       throw new Error('[ERROR] 입력값에 유효한 숫자가 없습니다.');
     }
 
-    return numberStrings.map(str => {
-      const num = Number(str);
-      if (!Number.isInteger(num)) {
-        throw new Error(`[ERROR] 입력값은 숫자여야 합니다: "${str}"`);
-      }
-      if (num < 0) {
-        throw new Error(`[ERROR] 입력값은 자연수만 허용됩니다: "${str}"`);
-      }
-      return num;
-    });
+    const numbers = [];
+    for (const str of numberStrings) {
+      if (!/^-?\d+(\.\d+)?$/.test(str)) {
+        continue;
+    }
+    const num = Number(str);
+    if (!Number.isInteger(num)) {
+      throw new Error(`[ERROR] 입력값은 숫자여야 합니다: "${str}"`);
+    }
+    if (num < 0) {
+      throw new Error(`[ERROR] 입력값은 자연수만 허용됩니다: "${str}"`);
+    }
+    numbers.push(num);
   }
-
-  exceptionHandling(numbers) {
-    // Target NaN
-    if (numbers.some(isNaN)) {
-      throw new Error("[ERROR] 입력값은 공백이 되어선 안됩니다.");
-    }
-    // Target non-integers
-    if (numbers.some(number => !Number.isInteger(number))) {
-      throw new Error("[ERROR] 입력값은 숫자여야 합니다.");
-    }
-    // Target non-natural numbers
-    if (numbers.some(number => number < 0)) {
-      throw new Error("[ERROR] 입력값은 자연수만 허용됩니다.");
-    }
+  // 전부 잘못된 경우
+  if (numbers.length === 0) {
+    throw new Error('[ERROR] 입력값에 유효한 숫자가 없습니다.');
   }
+  return numbers;
+  }
+  // exceptionHandling removed cause of duplicates
 }
 
 export default App;
