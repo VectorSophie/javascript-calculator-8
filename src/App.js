@@ -2,10 +2,10 @@ import { Console } from '@woowacourse/mission-utils';
 
 class App {
   async run() {
-    const inputString = await Console.readLineAsync("덧셈할 문자열을 입력해 주세요."); // await is crucial for actual user interface
+    const inputString = await Console.readLineAsync('덧셈할 문자열을 입력해 주세요.'); // await is crucial for actual user interface
 
     try {
-      const calculateResult = this.calculateSum(inputString)
+      const calculateResult = this.calculateSum(inputString);
       Console.print(`결과 : ${calculateResult}`);
     } catch (error) {
       Console.print(error.message);
@@ -20,10 +20,7 @@ class App {
 
     const { inputNumbers, separators } = this.parseInput(inputString);
     const numbers = this.parseNumbers(inputNumbers, separators);
-    let total = 0;
-    numbers.forEach(number => {
-      total += number;
-    }); // simple sum logic, will refactor later
+    const total = numbers.reduce((sum, num) => sum + num, 0); // Refactored using reduce
     return total;
   }
 
@@ -45,34 +42,29 @@ class App {
     const separatorsRegex = new RegExp(separators.join('|'), 'g');
     const numberStrings = inputNumbers
       .split(separatorsRegex)
-      .map(str => str.trim())
-      .filter(str => str.length > 0);
+      .map((str) => str.trim())
+      .filter(Boolean);
+      // Re-lengthed for eslint
 
     if (numberStrings.length === 0) {
       throw new Error('[ERROR] 입력값에 유효한 숫자가 없습니다.');
     }
 
-    const numbers = [];
-    for (const str of numberStrings) {
-      if (!/^-?\d+(\.\d+)?$/.test(str)) {
-        continue;
-    }
-    const num = Number(str);
-    if (!Number.isInteger(num)) {
-      throw new Error(`[ERROR] 입력값은 숫자여야 합니다: "${str}"`);
-    }
-    if (num < 0) {
-      throw new Error(`[ERROR] 입력값은 자연수만 허용됩니다: "${str}"`);
-    }
-    numbers.push(num);
+    const numbers = numberStrings
+      .filter((str) => /^-?\d+(\.\d+)?$/.test(str))
+      .map((str) => {
+        const num = Number(str);
+        if (!Number.isInteger(num)) {
+          throw new Error(`[ERROR] 입력값은 숫자여야 합니다: "${str}"`);
+        }
+        if (num < 0) {
+          throw new Error(`[ERROR] 입력값은 자연수만 허용됩니다: "${str}"`);
+        }
+        return num;
+      });
+    return numbers;
   }
-  // 전부 잘못된 경우
-  if (numbers.length === 0) {
-    throw new Error('[ERROR] 입력값에 유효한 숫자가 없습니다.');
-  }
-  return numbers;
-  }
-  // exceptionHandling removed cause of duplicates
+  // Refactored in order to match Airbnb eslint
 }
 
 export default App;
