@@ -9,7 +9,7 @@ class App {
       Console.print(`결과 : ${calculateResult}`);
     } catch (error) {
       Console.print(error.message);
-      throw error;
+      return Promise.reject(error);
     }
   }
 
@@ -62,6 +62,9 @@ class App {
         }
         return num;
       });
+    if (numbers.length === 0) {
+      throw new Error('[ERROR] 입력값에 유효한 숫자가 없습니다.'); // ex. if invalid like a,b,c, they will still persist after parseinput
+    } 
     return numbers;
   }
   // Refactored in order to match Airbnb eslint
