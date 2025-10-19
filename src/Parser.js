@@ -1,5 +1,5 @@
 export function parseInput(input) {
-    const customSeparatorRegex = /^\/\/(.)\n/; // Custom separator regex
+    const customSeparatorRegex = /^\/\/(.)(\\n|\n)/; // Custom separator regex
     const defaultSeparators = [',', ':'];
 
     if (customSeparatorRegex.test(input)) {
