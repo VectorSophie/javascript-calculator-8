@@ -3,7 +3,8 @@ import {parseInput, parseNumbers} from '../src/Parser.js'
 
 class App {
   async run() {
-    const inputString = await Console.readLineAsync('덧셈할 문자열을 입력해 주세요.'); // await is crucial for actual user interface
+    Console.print('덧셈할 문자열을 입력해 주세요.');
+    const inputString = await Console.readLineAsync(''); // await is crucial for actual user interface
 
     try {
       const calculateResult = this.calculateSum(inputString);
