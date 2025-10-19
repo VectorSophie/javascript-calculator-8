@@ -13,7 +13,10 @@ export function parseInput(input) {
   }
 
 export function parseNumbers(inputNumbers, separators) {
-    const separatorsRegex = new RegExp(separators.join('|'), 'g');
+    const escapedSeparators = separators.map((sep) =>
+    sep.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    ); // escape for . and :, etc
+    const separatorsRegex = new RegExp(escapedSeparators.join('|'), 'g');
     const numberStrings = inputNumbers
       .split(separatorsRegex)
       .map((str) => str.trim())
